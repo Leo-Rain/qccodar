@@ -45,7 +45,7 @@ params = {'thresholds' : [5.0, 50.0, 5.0, 5.0],
           'numfiles' : 3,
           'numdegrees' :  3,
           'numpoints' :  1,
-          'weight_parameter' : 'SNR',
+          'weight_parameter' : 'MP',
           'bearing' : 0,
 }
 
@@ -61,7 +61,7 @@ lrs, = axs[0].plot([], [], 'bo-', mec='yellow')
 
 axs[1].set_ylim(0, 45)
 axs[1].set_xlabel('Range Cell')
-axs[1].set_ylabel('Monopole (A3) SNR (dB)')
+axs[1].set_ylabel('MUSIC Power (dB)')
 ls_bad, = axs[1].plot([], [], 'ro', mec='r', mfc='None')
 ls_good, = axs[1].plot([], [], 'go', mec='g', markersize=8)
 
@@ -344,6 +344,12 @@ def plot_data(d, types_str, rsd, rstypes_str):
         lrs.set_xdata(rs[:,1])
         lrs.set_ydata(rs[:,0])
 
+def debug_data(d, types_str, rsd, rstypes_str):
+    # print bearing
+    # update plots with new bearing
+    rs = subset_rsdata(rsd, rsc, params['bearing'])
+    gd = subset_data_good(d, c, params['bearing'], params['numdegrees'])
+    bd = subset_data_bad(d, c, params['bearing'], params['numdegrees'])
 
 def get_data(datadir, fn, patterntype):
     """

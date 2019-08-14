@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Last modified: Time-stamp: <2015-10-12 14:39:30 haines>
+# Last modified: Time-stamp: <2017-08-24 19:38:16 codar>
 
 """Quality control (QC) functions for CODAR SeaSonde Radialmetric data
 
@@ -30,7 +30,9 @@ import numpy
 numpy.set_printoptions(suppress=True)
 
 # 
-from codarutils import *
+from .codarutils import *
+
+debug = 1
 
 def _commonly_assigned_columns():
     """
@@ -398,7 +400,7 @@ def find_files_to_merge(ifn, numfiles=3, sample_interval=30):
     """
 
     indir = os.path.dirname(ifn)
-    rdlstr = re.match(r'RDL[uv]', os.path.basename(ifn)).group()
+    rdlstr = re.match(r'RDL[vw]', os.path.basename(ifn)).group()
     all_files = recursive_glob(os.path.join(indir), rdlstr+'*.ruv')
 
     delta_minutes = ((numfiles-1)/2)*sample_interval
@@ -414,31 +416,29 @@ def find_files_to_merge(ifn, numfiles=3, sample_interval=30):
                 files.append(fn)
     assert len(files) <= numfiles, \
         "Some duplicate files found since number found > numfiles needed "
-    return files
-           
+    return files           
 
 def do_qc(datadir, fn, patterntype):
     """ Do qc and then average over 3 sample_intervals (time), 3 degrees of bearing.
     """
     # read in the data
-    ifn = os.path.join(datadir, 'RadialMetric', patterntype, fn)
+    rmfoldername = get_radialmetric_foldername(datadir)
+    ifn = os.path.join(datadir, rmfoldername, patterntype, fn)
     d, types_str, header, footer = read_lluv_file(ifn)
 
     # test_str = 'testall_mp_weight_npts1'
     # test_str = 'testall_mp_weight_npts3'
-    test_str = 'qcd'
+    # test_str = 'qcd'
 
     # determine output directory and filename for radialshort data
-    outdir = os.path.join(datadir, 'RadialShorts_'+test_str, patterntype)
-    if not os.path.exists(outdir):
-        os.makedirs(outdir)
+    outdir = os.path.join(datadir, 'RadialShorts_qcd', patterntype)
     if patterntype=='IdealPattern':
         lluvtype = 'x'
     elif patterntype=='MeasPattern':
         lluvtype = 'y'
     else:
         print 'Do not recognize patterntype='+patterntype+' -- must be IdealPattern or MeasPattern ' 
-        return
+        return None
     # substitute RDLv(w) for RDLx(y) in filename
     rsdfn = re.sub(r'RDL[vw]', 'RDL'+lluvtype, fn)
     ofn = os.path.join(outdir, rsdfn)
@@ -451,7 +451,7 @@ def do_qc(datadir, fn, patterntype):
         rsdfooter = footer
         # 
         write_output(ofn, rsdheader, rsd, rsdfooter)
-        return
+        return ofn
 
     # read in other data to use in averaging over time
     ixfns = find_files_to_merge(ifn, numfiles=3, sample_interval=30)
@@ -462,7 +462,8 @@ def do_qc(datadir, fn, patterntype):
         if len(d.shape) == len(d1.shape) == 2:
             if (d.shape[1] == d1.shape[1]) & (types_str == types_str1):
                 # if same number and order of columns as d, then append the data d
-                print '... ... merging: %s' % xfn
+                if debug:
+                    print '... ... include: %s' % xfn
                 d = numpy.vstack((d,d1))
 
     # (1) do threshold qc on radialmetric
@@ -483,15 +484,7 @@ def do_qc(datadir, fn, patterntype):
     rsdfooter = footer
     # 
     write_output(ofn, rsdheader, rsd, rsdfooter)
-
-def batch_qc(datadir, patterntype):
-    # get file listing of datadir
-    fns = recursive_glob(os.path.join(datadir, 'RadialMetric', patterntype), 'RDL*.ruv')
-    print 'Processing: ...'
-    for fullfn in fns:
-        print fullfn
-        fn = os.path.basename(fullfn)
-        do_qc(datadir, fn, patterntype)
+    return ofn
 
 # for debugging
 def _trial_qc():

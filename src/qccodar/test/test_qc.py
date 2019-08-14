@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Last modified: Time-stamp: <2015-10-02 08:32:58 haines>
+# Last modified: Time-stamp: <2017-07-05 18:19:58 codar>
 """
 Tests for qc thresholds and weighted averaging.
 
@@ -8,7 +8,7 @@ Tests for qc thresholds and weighted averaging.
 import os
 import numpy
 numpy.set_printoptions(suppress=True)
-from qcutils import *
+from qccodar.qcutils import *
 
 files = os.path.join(os.path.curdir, 'test', 'files')
 
@@ -192,10 +192,12 @@ def _scratch():
         # if not numpy.isnan(d1[i,j]):
             print "(%4d, %4d) %5g %5g" % (i,j, d1[i,j], td[i,j])    
 
-def generate_test4_output():
+def _generate_output():
+    # used this subroutine to generate output when assured qc functions correct
     ifn = os.path.join(files, 'codar_raw', 'Radialmetric_HATY_2013_11_05', 'RDLv_HATY_2013_11_05_0000.ruv')
     d, types_str, header, footer = read_lluv_file(ifn)
     # specify threshold in case default changes
+    # e.g. test4
     d4 = threshold_qc_loop_snr(d, types_str, threshold=5.0)
     #
     ofn = os.path.join(files, 'Radialmetric_test4', 'RDLv_HATY_2013_11_05_0000.ruv')

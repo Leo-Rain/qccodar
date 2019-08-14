@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Last modified: Time-stamp: <2015-06-01 15:46:36 haines>
+# Last modified: Time-stamp: <2017-07-05 13:25:48 codar>
 """
 Tests for writing lluv files.
 
@@ -10,7 +10,7 @@ We may need to deal with different types of LLUV files eventually.
 import os
 import numpy
 numpy.set_printoptions(suppress=True)
-from qcutils import *
+from qccodar.qcutils import *
 
 files = os.path.join(os.path.curdir, 'test', 'files')
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Last modified: Time-stamp: <2015-06-05 14:03:34 Sara>
+# Last modified: Time-stamp: <2017-07-05 13:24:32 codar>
 """
 Test functions for generating radialshort data output.
 
@@ -8,7 +8,7 @@ Test functions for generating radialshort data output.
 import os
 import numpy
 numpy.set_printoptions(suppress=True)
-from qcutils import *
+from qccodar.qcutils import *
 
 files = os.path.join(os.path.curdir, 'test', 'files')
 

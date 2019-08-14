@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Last modified: Time-stamp: <2015-06-01 15:46:36 haines>
+# Last modified: Time-stamp: <2017-07-05 13:25:32 codar>
 """
 Tests for reading lluv files.
 
@@ -8,7 +8,7 @@ We may need to deal with different types of LLUV files eventually.
 
 """
 import os
-from qcutils import *
+from qccodar.qcutils import *
 
 files = os.path.join(os.path.curdir, 'test', 'files')
 ifn = os.path.join(files, 'codar_raw', 'Radialmetric_HATY_2013_11_05', \
